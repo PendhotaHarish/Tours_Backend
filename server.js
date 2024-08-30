@@ -13,14 +13,7 @@ const DB = process.env.DATABASE.replace(
   process.env.DATABASE_PASSWORD
 );
 
-mongoose
-  .connect(DB, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-  })
-  .then(() => console.log('db connection successfully', DB));
+mongoose.connect(DB).then(() => console.log('db connection successfully'));
 
 //local connection
 // mongoose
