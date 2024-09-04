@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const tourController = require('./../controllers/tourControllers');
 const authController = require('./../controllers/authController');
 // const reviewController = require('./../controllers/reviewControllers');
@@ -43,6 +44,8 @@ router
   .patch(
     authController.protect,
     authController.restrictTo('admin', 'leadGuide'),
+    tourController.uploadTourImages,
+    tourController.resizeToursImages,
     tourController.updateTour
   )
   .delete(
@@ -50,6 +53,30 @@ router
     authController.restrictTo('admin', 'leadGuide'),
     tourController.deleteTour
   );
+
+router.get('/uploads/:imageName', (req, res) => {
+  const imageName = req.params.imageName;
+
+  // Sanitize the input to prevent directory traversal attacks
+  const sanitizedImageName = path.basename(imageName);
+
+  // Resolve the absolute path of the image
+  const imagePath = path.resolve(
+    __dirname,
+    './../public/img/tours/',
+    sanitizedImageName
+  );
+
+  // Set the correct Content-Type based on the file extension
+  res.type(path.extname(imagePath));
+
+  // Send the file
+  res.sendFile(imagePath, (err) => {
+    if (err) {
+      res.status(404).send('Image not found');
+    }
+  });
+});
 
 //nested routes
 // router
